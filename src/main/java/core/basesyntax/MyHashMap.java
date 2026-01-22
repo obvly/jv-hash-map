@@ -5,6 +5,7 @@ import java.util.Objects;
 public class MyHashMap<K, V> implements MyMap<K, V> {
     private static final int DEFAULT_CAPACITY = 16;
     private static final double DEFAULT_LOAD_FACTOR = 0.75;
+    private static final int GROW_FACTOR = 2;
     private int threshold;
     private Node<K, V>[] table;
     private int size;
@@ -63,7 +64,7 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
 
     private void resize() {
         Node<K, V>[] oldTable = table;
-        table = (Node<K, V>[]) new Node[oldTable.length * 2];
+        table = (Node<K, V>[]) new Node[oldTable.length * GROW_FACTOR];
         size = 0;
         threshold = (int) (table.length * DEFAULT_LOAD_FACTOR);
         for (Node<K, V> node : oldTable) {
@@ -78,8 +79,7 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
         if (key == null) {
             return 0;
         }
-        int hash = key.hashCode();
-        return Math.abs(hash) % table.length;
+        return (key.hashCode() & 0x7fffffff) % table.length;
     }
 
     private static class Node<K, V> {
@@ -87,7 +87,7 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
         private V value;
         private Node<K, V> next;
 
-        public Node(K key, V value) {
+        Node(K key, V value) {
             this.key = key;
             this.value = value;
         }
